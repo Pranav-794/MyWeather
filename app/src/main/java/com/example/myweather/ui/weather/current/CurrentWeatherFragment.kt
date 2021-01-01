@@ -2,11 +2,17 @@ package com.example.myweather.ui.weather.current
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.myweather.R
+import com.example.myweather.data.WeatherApiService
+import kotlinx.android.synthetic.main.current_weather_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class CurrentWeatherFragment : Fragment() {
 
@@ -25,6 +31,11 @@ class CurrentWeatherFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(CurrentWeatherViewModel::class.java)
         // TODO: Use the ViewModel
+        val apiService = WeatherApiService()
+        GlobalScope.launch { Dispatchers.Main
+            val currentWeatherResponse = apiService.getCurrentWeather("Clifton").execute()
+            Log.i("CurrentWeatherFrag", currentWeatherResponse.body()!!.currentWeatherEntry.toString())
+        }
     }
 
 }
