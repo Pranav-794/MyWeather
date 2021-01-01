@@ -1,5 +1,7 @@
-package com.example.myweather.data.response
+package com.example.myweather.data.network.response
 
+import com.example.myweather.data.db.entity.CurrentWeatherEntry
+import com.example.myweather.data.db.entity.Location
 import com.google.gson.annotations.SerializedName
 
 
