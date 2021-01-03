@@ -1,6 +1,8 @@
-package com.example.myweather.data
+package com.example.myweather.data.network
 
 import com.example.myweather.data.network.response.CurrentWeatherResponse
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
+import kotlinx.coroutines.Deferred
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -20,10 +22,12 @@ interface WeatherApiService {
     fun getCurrentWeather(
                 @Query("q") location: String,
                 @Query("lang") languageCode: String= "en"
-    ): retrofit2.Call<CurrentWeatherResponse>
+    ): Deferred<CurrentWeatherResponse>
 
     companion object {
-        operator fun invoke(): WeatherApiService {
+        operator fun invoke(
+                connectivityInterceptor: ConnectivityInterceptorImpl
+        ): WeatherApiService {
             val requestInterceptor = Interceptor { chain ->
                 val url = chain.request()
                         .url()
@@ -41,11 +45,13 @@ interface WeatherApiService {
 
             val okHttpClient = OkHttpClient.Builder()
                     .addInterceptor(requestInterceptor)
+                    .addInterceptor(connectivityInterceptor)
                     .build()
 
             return Retrofit.Builder()
                     .client(okHttpClient)
                     .baseUrl(BASE_URL)
+                    .addCallAdapterFactory(CoroutineCallAdapterFactory())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
                     .create(WeatherApiService::class.java)
